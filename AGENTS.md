@@ -166,6 +166,37 @@ pub fn error_response(status: StatusCode, message: &str) -> impl IntoResponse {
 }
 ```
 
+### JSON Deserialization Errors
+
+Axum's `Json` extractor returns a plain-text `422 Unprocessable Entity` by default when the body fails to deserialize. Controllers must catch this and map it to the unified API error format. Accept `Result<Json<T>, JsonRejection>` in the handler signature:
+
+```rust
+use axum::{
+    extract::{rejection::JsonRejection, State},
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
+};
+
+pub async fn create_user(
+    State(pool): State<PgPool>,
+    body: Result<Json<CreateUserRequest>, JsonRejection>,
+) -> impl IntoResponse {
+    let Json(body) = match body {
+        Ok(body) => body,
+        Err(rejection) => {
+            return errors::error(
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "20006",
+                &rejection.to_string(),
+            );
+        }
+    };
+
+    // ... proceed with validation / service call
+}
+```
+
 ---
 
 ## Validation
