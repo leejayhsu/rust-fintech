@@ -1,12 +1,12 @@
 use sqlx::PgPool;
-use uuid::Uuid;
 
 use crate::{
     errors::user_error::UserError,
     models::user::{CreateUserRequest, User, UserPublic},
+    utils,
 };
 
-pub async fn find_by_id(pool: &PgPool, id: Uuid) -> Result<UserPublic, UserError> {
+pub async fn find_by_id(pool: &PgPool, id: &str) -> Result<UserPublic, UserError> {
     let user = sqlx::query_as::<_, UserPublic>(
         r#"
         SELECT id, email, created_at
@@ -32,7 +32,7 @@ pub async fn create(pool: &PgPool, req: CreateUserRequest) -> Result<User, UserE
         RETURNING id, email, password_hash, created_at
         "#,
     )
-    .bind(Uuid::new_v4())
+    .bind(utils::generate_id("usr"))
     .bind(req.email)
     .bind(password_hash)
     .bind(chrono::Utc::now())

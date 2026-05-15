@@ -5,7 +5,6 @@ use axum::{
     Json,
 };
 use sqlx::PgPool;
-use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
@@ -16,9 +15,9 @@ use crate::{
 
 pub async fn get(
     State(pool): State<PgPool>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> impl IntoResponse {
-    match user_service::find_by_id(&pool, id).await {
+    match user_service::find_by_id(&pool, &id).await {
         Ok(user) => (StatusCode::OK, Json(UserResponse::from(user))).into_response(),
         Err(UserError::NotFound) => error_response(StatusCode::NOT_FOUND, "user not found"),
         Err(UserError::Database(e)) => {

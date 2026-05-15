@@ -1,11 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct User {
-    pub id: Uuid,
+    pub id: String,
     pub email: String,
     #[allow(dead_code)]
     #[serde(skip_serializing)]
@@ -15,7 +14,7 @@ pub struct User {
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct UserPublic {
-    pub id: Uuid,
+    pub id: String,
     pub email: String,
     pub created_at: DateTime<Utc>,
 }
@@ -31,7 +30,7 @@ pub struct CreateUserRequest {
 
 #[derive(Debug, Serialize)]
 pub struct UserResponse {
-    pub id: Uuid,
+    pub id: String,
     pub email: String,
     pub created_at: DateTime<Utc>,
 }

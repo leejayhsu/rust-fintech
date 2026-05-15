@@ -12,10 +12,10 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-sqlx = { version = "0.8", features = ["postgres", "runtime-tokio", "uuid", "chrono"] }
+sqlx = { version = "0.8", features = ["postgres", "runtime-tokio", "chrono"] }
 thiserror = "2"
 validator = { version = "0.19", features = ["derive"] }
-uuid = { version = "1", features = ["v4", "serde"] }
+nanoid = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 bcrypt = "0.17"
 dotenvy = "0.15"
