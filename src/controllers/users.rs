@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{rejection::JsonRejection, Path, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -38,8 +38,19 @@ pub async fn get(
 
 pub async fn create(
     State(pool): State<PgPool>,
-    Json(body): Json<CreateUserReq>,
+    body: Result<Json<CreateUserReq>, JsonRejection>,
 ) -> impl IntoResponse {
+    let Json(body) = match body {
+        Ok(body) => body,
+        Err(rejection) => {
+            return errors::error(
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "20006",
+                &rejection.to_string(),
+            );
+        }
+    };
+
     if let Err(e) = body.validate() {
         return errors::error(
             StatusCode::UNPROCESSABLE_ENTITY,
