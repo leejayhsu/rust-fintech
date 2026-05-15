@@ -22,6 +22,67 @@ Rust REST API using Axum, SQLx, and thiserror. Follows a controller/service arch
 - Never reference HTTP types (`StatusCode`, `HeaderMap`, etc.)
 - Services should be a single unit of work, like CreateUser, GetUser, DeleteUser, etc.
 
+**Models** (`src/models/`)
+- For each entity, we should have various representations:
+  - entity from serialized from DB
+  - entity returned in api response (here is where we will ommit sensitive fields, and other things api clients dont need to know about). should follow {HTTPAction}{Entity}{Req|Resp}, generally, when a model is used for the HTTP layer.
+  - colocate request with entity models.
+  - A full list of models for a user entity might be:
+    - CreateUserReq
+    - UpdateUserReq
+    - UserResp (any api that returns a user object would use this model)
+    - User (DB row struct)
+
+**API layer**
+- use a unified api response format
+- example success response, non-paginated
+```json
+{
+  "success": true,
+  "error": null,
+  "data": {}
+}
+```
+- example success response, paginated
+```json
+{
+  "success": true,
+  "error": null,
+  "data": {
+    "items": [],
+    "total": 0
+  }
+}
+```
+- example error response
+```json
+{
+  "success": false,
+  "error": {
+    "code": "", // stable, machine readable error code
+    "desc": "" // human readable error description
+  },
+  "data": null
+}
+```
+- every error should have a numeric code. it should be 5 digits, and have a basic encoding.
+- first digit = domain (auth, user, transactions, etc)
+- every digit after that should just be incrementing from 0 for each error type.
+- keep track of error codes in an enum.
+
+examples:
+auth errors
+10001 - weak password
+10002 - invalid credentials
+
+user errors
+20001 - user not found
+20002 - update now allowed
+
+transaction errors
+30001 - insufficient funds
+30002 - transaction not found
+
 ### File Layout
 
 ```
