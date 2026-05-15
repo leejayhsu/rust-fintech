@@ -7,8 +7,16 @@ use validator::Validate;
 pub struct User {
     pub id: Uuid,
     pub email: String,
+    #[allow(dead_code)]
     #[serde(skip_serializing)]
     pub password_hash: String,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, sqlx::FromRow)]
+pub struct UserPublic {
+    pub id: Uuid,
+    pub email: String,
     pub created_at: DateTime<Utc>,
 }
 
@@ -30,6 +38,16 @@ pub struct UserResponse {
 
 impl From<User> for UserResponse {
     fn from(user: User) -> Self {
+        Self {
+            id: user.id,
+            email: user.email,
+            created_at: user.created_at,
+        }
+    }
+}
+
+impl From<UserPublic> for UserResponse {
+    fn from(user: UserPublic) -> Self {
         Self {
             id: user.id,
             email: user.email,
