@@ -18,11 +18,15 @@ pub fn build(pool: PgPool) -> Router {
 }
 
 fn api_routes() -> Router<PgPool> {
-    Router::new().nest("/users", user_routes())
+    Router::new()
+        .nest("/auth", auth_routes())
+        .nest("/users", user_routes())
+}
+
+fn auth_routes() -> Router<PgPool> {
+    Router::new().route("/signup", post(controllers::auth::signup))
 }
 
 fn user_routes() -> Router<PgPool> {
-    Router::new()
-        .route("/", post(controllers::users::create))
-        .route("/{id}", get(controllers::users::get))
+    Router::new().route("/{id}", get(controllers::users::get))
 }
