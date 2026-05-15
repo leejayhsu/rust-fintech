@@ -3,8 +3,23 @@ use uuid::Uuid;
 
 use crate::{
     errors::user_error::UserError,
-    models::user::{CreateUserRequest, User},
+    models::user::{CreateUserRequest, User, UserPublic},
 };
+
+pub async fn find_by_id(pool: &PgPool, id: Uuid) -> Result<UserPublic, UserError> {
+    let user = sqlx::query_as::<_, UserPublic>(
+        r#"
+        SELECT id, email, created_at
+        FROM users
+        WHERE id = $1
+        "#,
+    )
+    .bind(id)
+    .fetch_optional(pool)
+    .await?;
+
+    user.ok_or(UserError::NotFound)
+}
 
 pub async fn create(pool: &PgPool, req: CreateUserRequest) -> Result<User, UserError> {
     let password_hash = bcrypt::hash(&req.password, bcrypt::DEFAULT_COST)

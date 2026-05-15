@@ -22,5 +22,7 @@ fn api_routes() -> Router<PgPool> {
 }
 
 fn user_routes() -> Router<PgPool> {
-    Router::new().route("/", post(controllers::users::create))
+    Router::new()
+        .route("/", post(controllers::users::create))
+        .route("/{id}", get(controllers::users::get))
 }

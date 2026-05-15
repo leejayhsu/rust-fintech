@@ -1,5 +1,11 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
+};
 use sqlx::PgPool;
+use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
@@ -7,6 +13,24 @@ use crate::{
     models::user::{CreateUserRequest, UserResponse},
     services::users as user_service,
 };
+
+pub async fn get(
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+) -> impl IntoResponse {
+    match user_service::find_by_id(&pool, id).await {
+        Ok(user) => (StatusCode::OK, Json(UserResponse::from(user))).into_response(),
+        Err(UserError::NotFound) => error_response(StatusCode::NOT_FOUND, "user not found"),
+        Err(UserError::Database(e)) => {
+            tracing::error!("db error: {e}");
+            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+        }
+        Err(e) => {
+            tracing::error!("unhandled error: {e}");
+            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+        }
+    }
+}
 
 pub async fn create(
     State(pool): State<PgPool>,
