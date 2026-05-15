@@ -312,6 +312,10 @@ Update `Router<PgPool>` to `Router<AppState>` throughout and extract with `State
 
 ---
 
+## API Testing
+
+When providing curl examples or test commands, **never include a trailing slash** on routes. Axum does not normalize trailing slashes by default, so a request to `/api/v1/users/` will 404 while `/api/v1/users` succeeds.
+
 ## General Rules
 
 - No `unwrap()` or `expect()` in production paths — use `?` or explicit error handling
