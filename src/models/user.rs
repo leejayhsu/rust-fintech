@@ -12,15 +12,8 @@ pub struct User {
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Debug, sqlx::FromRow)]
-pub struct UserPublic {
-    pub id: String,
-    pub email: String,
-    pub created_at: DateTime<Utc>,
-}
-
 #[derive(Debug, Deserialize, Validate)]
-pub struct CreateUserRequest {
+pub struct CreateUserReq {
     #[validate(email(message = "invalid email format"))]
     pub email: String,
 
@@ -28,25 +21,15 @@ pub struct CreateUserRequest {
     pub password: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct UserResponse {
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct UserResp {
     pub id: String,
     pub email: String,
     pub created_at: DateTime<Utc>,
 }
 
-impl From<User> for UserResponse {
+impl From<User> for UserResp {
     fn from(user: User) -> Self {
-        Self {
-            id: user.id,
-            email: user.email,
-            created_at: user.created_at,
-        }
-    }
-}
-
-impl From<UserPublic> for UserResponse {
-    fn from(user: UserPublic) -> Self {
         Self {
             id: user.id,
             email: user.email,

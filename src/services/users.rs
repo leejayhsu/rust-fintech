@@ -2,40 +2,42 @@ use sqlx::PgPool;
 
 use crate::{
     errors::user_error::UserError,
-    models::user::{CreateUserRequest, User, UserPublic},
+    models::user::{CreateUserReq, User, UserResp},
     utils,
 };
 
-pub async fn find_by_id(pool: &PgPool, id: &str) -> Result<UserPublic, UserError> {
-    let user = sqlx::query_as::<_, UserPublic>(
+pub async fn find_by_id(pool: &PgPool, id: &str) -> Result<UserResp, UserError> {
+    let user = sqlx::query_as!(
+        UserResp,
         r#"
         SELECT id, email, created_at
         FROM users
         WHERE id = $1
         "#,
+        id
     )
-    .bind(id)
     .fetch_optional(pool)
     .await?;
 
     user.ok_or(UserError::NotFound)
 }
 
-pub async fn create(pool: &PgPool, req: CreateUserRequest) -> Result<User, UserError> {
+pub async fn create(pool: &PgPool, req: CreateUserReq) -> Result<User, UserError> {
     let password_hash = bcrypt::hash(&req.password, bcrypt::DEFAULT_COST)
         .map_err(|_| UserError::PasswordHash)?;
 
-    let user = sqlx::query_as::<_, User>(
+    let user = sqlx::query_as!(
+        User,
         r#"
         INSERT INTO users (id, email, password_hash, created_at)
         VALUES ($1, $2, $3, $4)
         RETURNING id, email, password_hash, created_at
         "#,
+        utils::generate_id("usr"),
+        req.email,
+        password_hash,
+        chrono::Utc::now()
     )
-    .bind(utils::generate_id("usr"))
-    .bind(req.email)
-    .bind(password_hash)
-    .bind(chrono::Utc::now())
     .fetch_one(pool)
     .await;
 
