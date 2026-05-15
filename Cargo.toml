@@ -18,3 +18,4 @@ validator = { version = "0.19", features = ["derive"] }
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 bcrypt = "0.17"
+dotenvy = "0.15"
