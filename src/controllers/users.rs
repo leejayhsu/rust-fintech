@@ -8,8 +8,8 @@ use sqlx::PgPool;
 use validator::Validate;
 
 use crate::{
-    errors::{error_response, user_error::UserError},
-    models::user::{CreateUserRequest, UserResponse},
+    errors::{self, user_error::UserError},
+    models::user::{CreateUserReq, UserResp},
     services::users as user_service,
 };
 
@@ -18,47 +18,56 @@ pub async fn get(
     Path(id): Path<String>,
 ) -> impl IntoResponse {
     match user_service::find_by_id(&pool, &id).await {
-        Ok(user) => (StatusCode::OK, Json(UserResponse::from(user))).into_response(),
-        Err(UserError::NotFound) => error_response(StatusCode::NOT_FOUND, "user not found"),
+        Ok(user) => errors::success(user),
+        Err(UserError::NotFound) => errors::error(
+            StatusCode::NOT_FOUND,
+            UserError::NotFound.code(),
+            &UserError::NotFound.desc(),
+        ),
         Err(UserError::Database(e)) => {
             tracing::error!("db error: {e}");
-            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            let err = UserError::Database(e);
+            errors::error(StatusCode::INTERNAL_SERVER_ERROR, err.code(), &err.desc())
         }
         Err(e) => {
             tracing::error!("unhandled error: {e}");
-            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            errors::error(StatusCode::INTERNAL_SERVER_ERROR, e.code(), &e.desc())
         }
     }
 }
 
 pub async fn create(
     State(pool): State<PgPool>,
-    Json(body): Json<CreateUserRequest>,
+    Json(body): Json<CreateUserReq>,
 ) -> impl IntoResponse {
     if let Err(e) = body.validate() {
-        return (
+        return errors::error(
             StatusCode::UNPROCESSABLE_ENTITY,
-            Json(serde_json::json!({ "error": format!("{}", e) })),
-        )
-            .into_response();
+            "20005",
+            &format!("validation failed: {e}"),
+        );
     }
 
     match user_service::create(&pool, body).await {
-        Ok(user) => (StatusCode::CREATED, Json(UserResponse::from(user))).into_response(),
-        Err(UserError::EmailConflict) => {
-            error_response(StatusCode::CONFLICT, "email already in use")
-        }
+        Ok(user) => errors::success(UserResp::from(user)),
+        Err(UserError::EmailConflict) => errors::error(
+            StatusCode::CONFLICT,
+            UserError::EmailConflict.code(),
+            &UserError::EmailConflict.desc(),
+        ),
         Err(UserError::PasswordHash) => {
             tracing::error!("password hashing failed");
-            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            let err = UserError::PasswordHash;
+            errors::error(StatusCode::INTERNAL_SERVER_ERROR, err.code(), &err.desc())
         }
         Err(UserError::Database(e)) => {
             tracing::error!("db error: {e}");
-            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            let err = UserError::Database(e);
+            errors::error(StatusCode::INTERNAL_SERVER_ERROR, err.code(), &err.desc())
         }
         Err(e) => {
             tracing::error!("unhandled error: {e}");
-            error_response(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            errors::error(StatusCode::INTERNAL_SERVER_ERROR, e.code(), &e.desc())
         }
     }
 }
