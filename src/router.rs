@@ -43,5 +43,7 @@ fn ledger_routes() -> Router<PgPool> {
 }
 
 fn ledger_account_routes() -> Router<PgPool> {
-    Router::new().route("/", post(controllers::ledger_accounts::create))
+    Router::new()
+        .route("/", post(controllers::ledger_accounts::create))
+        .route("/{id}", get(controllers::ledger_accounts::get))
 }
