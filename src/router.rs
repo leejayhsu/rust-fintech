@@ -28,7 +28,7 @@ fn api_routes() -> Router<PgPool> {
 fn auth_routes() -> Router<PgPool> {
     Router::new()
         .route("/signup", post(controllers::auth::signup))
-        .route("/login", post(controllers::auth::login))
+        .route("/signin", post(controllers::auth::signin))
         .route("/logout", post(controllers::auth::logout))
         .route("/me", get(controllers::auth::me))
 }

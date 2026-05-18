@@ -11,7 +11,7 @@ use validator::Validate;
 use crate::{
     auth::{AuthUser, build_session_cookie, build_session_removal_cookie, SESSION_COOKIE_NAME},
     errors::{self, auth_error::AuthError, user_error::UserError},
-    models::{auth::LoginReq, user::UserResp},
+    models::{auth::SigninReq, user::UserResp},
     services::{auth as auth_service, sessions as session_service, users as user_service},
 };
 
@@ -62,10 +62,10 @@ pub async fn signup(
     }
 }
 
-pub async fn login(
+pub async fn signin(
     State(pool): State<PgPool>,
     cookies: Cookies,
-    body: Result<Json<LoginReq>, JsonRejection>,
+    body: Result<Json<SigninReq>, JsonRejection>,
 ) -> impl IntoResponse {
     let Json(body) = match body {
         Ok(body) => body,
@@ -103,7 +103,7 @@ pub async fn login(
             &AuthError::InvalidCredentials.desc(),
         ),
         Err(e) => {
-            tracing::error!("login error: {e}");
+            tracing::error!("signin error: {e}");
             errors::error(StatusCode::INTERNAL_SERVER_ERROR, e.code(), &e.desc())
         }
     }

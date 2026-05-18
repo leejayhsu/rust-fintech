@@ -2,7 +2,7 @@ use serde::Deserialize;
 use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate)]
-pub struct LoginReq {
+pub struct SigninReq {
     #[validate(email(message = "invalid email format"))]
     pub email: String,
 
