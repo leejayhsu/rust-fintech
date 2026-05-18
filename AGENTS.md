@@ -254,6 +254,7 @@ pub async fn create_user(
 - Use `PgPool` passed via Axum `State`
 - Use `query_as!` macro with compile-time checking where possible
 - Wrap SQLx errors in domain error variants via `#[from]` — do not leak `sqlx::Error` out of services
+- for local development, you can assume the db is running at: DATABASE_URL=postgres://postgres:postgres@localhost:5432/rust_fintech (useful for compile time type checking)
 
 ```rust
 // src/services/users.rs
