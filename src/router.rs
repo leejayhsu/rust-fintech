@@ -23,6 +23,7 @@ fn api_routes() -> Router<PgPool> {
     Router::new()
         .nest("/auth", auth_routes())
         .nest("/users", user_routes())
+        .nest("/ledger", ledger_routes())
 }
 
 fn auth_routes() -> Router<PgPool> {
@@ -35,4 +36,12 @@ fn auth_routes() -> Router<PgPool> {
 
 fn user_routes() -> Router<PgPool> {
     Router::new().route("/{id}", get(controllers::users::get))
+}
+
+fn ledger_routes() -> Router<PgPool> {
+    Router::new().nest("/accounts", ledger_account_routes())
+}
+
+fn ledger_account_routes() -> Router<PgPool> {
+    Router::new().route("/", post(controllers::ledger_accounts::create))
 }

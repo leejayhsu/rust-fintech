@@ -3,6 +3,7 @@ use serde::Serialize;
 use serde_json::json;
 
 pub mod auth_error;
+pub mod ledger_error;
 pub mod user_error;
 
 #[derive(Debug, Serialize)]
