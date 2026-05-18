@@ -1,0 +1,4 @@
+ALTER TABLE journal_entries RENAME TO ledger_journal_entries;
+ALTER INDEX idx_journal_entries_status RENAME TO idx_ledger_journal_entries_status;
+ALTER TABLE ledger_entries RENAME COLUMN journal_entry_id TO ledger_journal_entry_id;
+ALTER INDEX idx_ledger_entries_journal RENAME TO idx_ledger_entries_ledger_journal;
