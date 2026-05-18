@@ -3,6 +3,7 @@ use axum::{
     Router,
 };
 use sqlx::PgPool;
+use tower_cookies::CookieManagerLayer;
 use tower_http::{compression::CompressionLayer, cors::CorsLayer, trace::TraceLayer};
 
 use crate::controllers;
@@ -11,6 +12,7 @@ pub fn build(pool: PgPool) -> Router {
     Router::new()
         .nest("/api/v1", api_routes())
         .route("/health", get(controllers::health::check))
+        .layer(CookieManagerLayer::new())
         .layer(CompressionLayer::new())
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())
@@ -24,7 +26,11 @@ fn api_routes() -> Router<PgPool> {
 }
 
 fn auth_routes() -> Router<PgPool> {
-    Router::new().route("/signup", post(controllers::auth::signup))
+    Router::new()
+        .route("/signup", post(controllers::auth::signup))
+        .route("/login", post(controllers::auth::login))
+        .route("/logout", post(controllers::auth::logout))
+        .route("/me", get(controllers::auth::me))
 }
 
 fn user_routes() -> Router<PgPool> {

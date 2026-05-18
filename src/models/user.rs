@@ -21,7 +21,7 @@ pub struct CreateUserReq {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, sqlx::FromRow)]
+#[derive(Clone, Debug, Serialize, sqlx::FromRow)]
 pub struct UserResp {
     pub id: String,
     pub email: String,
