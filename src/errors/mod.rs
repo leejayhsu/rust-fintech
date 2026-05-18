@@ -2,6 +2,7 @@ use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde::Serialize;
 use serde_json::json;
 
+pub mod auth_error;
 pub mod user_error;
 
 #[derive(Debug, Serialize)]
