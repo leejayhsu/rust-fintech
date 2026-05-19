@@ -33,6 +33,12 @@ Rust REST API using Axum, SQLx, and thiserror. Follows a controller/service arch
     - UserResp (any api that returns a user object would use this model)
     - User (DB row struct)
 
+** DB layer**
+- prefer text columns instead of varchar
+- snake_case column names
+- pluralized table names
+
+
 **API layer**
 - use a unified api response format
 - example success response, non-paginated
