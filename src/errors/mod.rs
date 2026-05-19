@@ -5,6 +5,7 @@ use serde_json::json;
 pub mod auth_error;
 pub mod ledger_error;
 pub mod ledger_journal_entry_error;
+pub mod party_error;
 pub mod user_error;
 
 #[derive(Debug, Serialize)]
