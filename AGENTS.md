@@ -8,21 +8,21 @@ Rust REST API using Axum, SQLx, and thiserror. Follows a controller/service arch
 
 ### Layer Responsibilities
 
-**Controllers** (`src/controllers/`)
+**Controllers** (`crates/api/src/controllers/`)
 - Parse and extract HTTP request data (path params, query params, request body)
 - Validate request structure and format (see Validation section)
 - Call one or more services
 - Map service results (including errors) to appropriate HTTP responses
 - Return `impl IntoResponse`
 
-**Services** (`src/services/`)
+**Services** (`crates/api/src/services/`)
 - Contain all business logic
 - Interact with the database via SQLx
 - Return `Result<T, SomeError>` using thiserror-defined error types
 - Never reference HTTP types (`StatusCode`, `HeaderMap`, etc.)
 - Services should be a single unit of work, like CreateUser, GetUser, DeleteUser, etc.
 
-**Models** (`src/models/`)
+**Models** (`crates/api/src/models/`)
 - For each entity, we should have various representations:
   - entity from serialized from DB
   - entity returned in api response (here is where we will ommit sensitive fields, and other things api clients dont need to know about). should follow {HTTPAction}{Entity}{Req|Resp}, generally, when a model is used for the HTTP layer.
@@ -92,22 +92,24 @@ transaction errors
 ### File Layout
 
 ```
-src/
-  controllers/
-    mod.rs
-    users.rs
-  services/
-    mod.rs
-    users.rs
-  errors/
-    mod.rs
-    user_error.rs   # one error enum per domain
-  models/
-    mod.rs
-    user.rs         # DB row structs, request/response types
-  db.rs             # pool setup
-  main.rs
-  router.rs
+crates/api/
+  src/
+    controllers/
+      mod.rs
+      users.rs
+    services/
+      mod.rs
+      users.rs
+    errors/
+      mod.rs
+      user_error.rs   # one error enum per domain
+    models/
+      mod.rs
+      user.rs         # DB row structs, request/response types
+    db.rs             # pool setup
+    main.rs
+    router.rs
+  migrations/
 ```
 
 ---

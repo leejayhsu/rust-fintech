@@ -1,0 +1,14 @@
+{
+  "name": "@rust-fintech/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "dev": "echo \"Frontend scaffold has not been added yet.\"",
+    "build": "echo \"Frontend scaffold has not been added yet.\""
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

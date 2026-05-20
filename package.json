@@ -1,0 +1,13 @@
+{
+  "name": "rust-fintech-api-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "api:dev": "cargo run -p api",
+    "api:check": "cargo check -p api",
+    "web:dev": "npm --workspace @rust-fintech/web run dev"
+  }
+}
