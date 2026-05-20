@@ -8,11 +8,13 @@ use crate::{
     models::ledger_account::{LedgerAccount, LedgerAccountBalance},
     models::ledger_entry::LedgerEntry,
     models::ledger_journal_entry::{
-        CreateExchangeLedgerJournalEntryReq, CreateLedgerJournalEntryLegReq, CreateLedgerJournalEntryReq, LedgerJournalEntry,
+        CreateExchangeLedgerJournalEntryReq, CreateLedgerJournalEntryLegReq,
+        CreateLedgerJournalEntryReq, LedgerJournalEntry,
     },
     utils,
 };
 
+#[allow(dead_code)]
 pub async fn create(
     pool: &PgPool,
     req: CreateLedgerJournalEntryReq,
@@ -21,6 +23,7 @@ pub async fn create(
     execute(pool, req.debits, req.credits, req.status).await
 }
 
+#[allow(dead_code)]
 pub async fn create_exchange(
     pool: &PgPool,
     req: CreateExchangeLedgerJournalEntryReq,
@@ -34,6 +37,7 @@ pub async fn create_exchange(
     execute(pool, compound.debits, compound.credits, compound.status).await
 }
 
+#[allow(dead_code)]
 async fn execute(
     pool: &PgPool,
     debits: Vec<CreateLedgerJournalEntryLegReq>,
@@ -246,6 +250,7 @@ async fn execute(
     Ok((journal_entry, entries))
 }
 
+#[allow(dead_code)]
 fn validate_compound(req: &CreateLedgerJournalEntryReq) -> Result<(), LedgerJournalEntryError> {
     if req.debits.is_empty() || req.credits.is_empty() {
         return Err(LedgerJournalEntryError::InvalidJournalEntry);
@@ -283,7 +288,10 @@ fn validate_compound(req: &CreateLedgerJournalEntryReq) -> Result<(), LedgerJour
     Ok(())
 }
 
-fn validate_exchange(req: &CreateExchangeLedgerJournalEntryReq) -> Result<(), LedgerJournalEntryError> {
+#[allow(dead_code)]
+fn validate_exchange(
+    req: &CreateExchangeLedgerJournalEntryReq,
+) -> Result<(), LedgerJournalEntryError> {
     if req.debit.currency_code == req.credit.currency_code {
         return Err(LedgerJournalEntryError::InvalidJournalEntry);
     }

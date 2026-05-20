@@ -23,8 +23,8 @@ pub async fn find_by_id(pool: &PgPool, id: &str) -> Result<UserResp, UserError> 
 }
 
 pub async fn create(pool: &PgPool, req: CreateUserReq) -> Result<User, UserError> {
-    let password_hash = bcrypt::hash(&req.password, bcrypt::DEFAULT_COST)
-        .map_err(|_| UserError::PasswordHash)?;
+    let password_hash =
+        bcrypt::hash(&req.password, bcrypt::DEFAULT_COST).map_err(|_| UserError::PasswordHash)?;
 
     let user = sqlx::query_as!(
         User,

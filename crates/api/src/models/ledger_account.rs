@@ -32,7 +32,11 @@ pub struct CreateLedgerAccountReq {
     #[validate(length(min = 1, max = 100))]
     pub name: Option<String>,
 
-    #[validate(length(min = 3, max = 3, message = "currency code must be a valid 3-letter ISO code"))]
+    #[validate(length(
+        min = 3,
+        max = 3,
+        message = "currency code must be a valid 3-letter ISO code"
+    ))]
     pub currency_code: String,
 
     #[serde(default)]

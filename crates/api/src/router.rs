@@ -1,6 +1,6 @@
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use sqlx::PgPool;
 use tower_cookies::CookieManagerLayer;

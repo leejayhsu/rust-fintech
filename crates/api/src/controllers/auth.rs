@@ -1,15 +1,15 @@
 use axum::{
-    extract::{rejection::JsonRejection, State},
+    Json,
+    extract::{State, rejection::JsonRejection},
     http::StatusCode,
     response::IntoResponse,
-    Json,
 };
 use sqlx::PgPool;
 use tower_cookies::Cookies;
 use validator::Validate;
 
 use crate::{
-    auth::{AuthUser, build_session_cookie, build_session_removal_cookie, SESSION_COOKIE_NAME},
+    auth::{AuthUser, SESSION_COOKIE_NAME, build_session_cookie, build_session_removal_cookie},
     errors::{self, auth_error::AuthError, user_error::UserError},
     models::{auth::SigninReq, user::UserResp},
     services::{auth as auth_service, sessions as session_service, users as user_service},
@@ -109,10 +109,7 @@ pub async fn signin(
     }
 }
 
-pub async fn logout(
-    State(pool): State<PgPool>,
-    cookies: Cookies,
-) -> impl IntoResponse {
+pub async fn logout(State(pool): State<PgPool>, cookies: Cookies) -> impl IntoResponse {
     if let Some(cookie) = cookies.get(SESSION_COOKIE_NAME) {
         let token = cookie.value().to_string();
         if let Err(e) = session_service::delete_by_token(&pool, &token).await {

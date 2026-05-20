@@ -1,8 +1,8 @@
 use axum::{
-    extract::{rejection::JsonRejection, Path, State},
+    Json,
+    extract::{Path, State, rejection::JsonRejection},
     http::StatusCode,
     response::IntoResponse,
-    Json,
 };
 use sqlx::PgPool;
 use validator::Validate;
@@ -66,10 +66,7 @@ pub async fn create(
     }
 }
 
-pub async fn get(
-    State(pool): State<PgPool>,
-    Path(account_id): Path<String>,
-) -> impl IntoResponse {
+pub async fn get(State(pool): State<PgPool>, Path(account_id): Path<String>) -> impl IntoResponse {
     match ledger_service::find_by_id(&pool, &account_id).await {
         Ok(account) => errors::success(account),
         Err(LedgerError::AccountNotFound) => errors::error(
@@ -84,15 +81,27 @@ pub async fn get(
         }
         Err(LedgerError::UserNotFound) => {
             tracing::error!("unexpected UserNotFound in get");
-            errors::error(StatusCode::INTERNAL_SERVER_ERROR, "40005", "internal server error")
+            errors::error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "40005",
+                "internal server error",
+            )
         }
         Err(LedgerError::CurrencyNotFound) => {
             tracing::error!("unexpected CurrencyNotFound in get");
-            errors::error(StatusCode::INTERNAL_SERVER_ERROR, "40005", "internal server error")
+            errors::error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "40005",
+                "internal server error",
+            )
         }
         Err(LedgerError::DuplicateCurrencyBalance) => {
             tracing::error!("unexpected DuplicateCurrencyBalance in get");
-            errors::error(StatusCode::INTERNAL_SERVER_ERROR, "40005", "internal server error")
+            errors::error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "40005",
+                "internal server error",
+            )
         }
     }
 }

@@ -1,8 +1,8 @@
 use axum::{
-    extract::{rejection::JsonRejection, Path, State},
+    Json,
+    extract::{Path, State, rejection::JsonRejection},
     http::StatusCode,
     response::IntoResponse,
-    Json,
 };
 use sqlx::PgPool;
 use validator::Validate;
@@ -58,15 +58,16 @@ pub async fn create(
         }
         Err(PartyError::PartyNotFound) => {
             tracing::error!("unexpected PartyNotFound in create");
-            errors::error(StatusCode::INTERNAL_SERVER_ERROR, "50003", "internal server error")
+            errors::error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "50003",
+                "internal server error",
+            )
         }
     }
 }
 
-pub async fn get(
-    State(pool): State<PgPool>,
-    Path(party_id): Path<String>,
-) -> impl IntoResponse {
+pub async fn get(State(pool): State<PgPool>, Path(party_id): Path<String>) -> impl IntoResponse {
     match party_service::find_by_id(&pool, &party_id).await {
         Ok(party) => errors::success(party),
         Err(PartyError::PartyNotFound) => errors::error(
@@ -81,7 +82,11 @@ pub async fn get(
         }
         Err(PartyError::PartyAlreadyExists) => {
             tracing::error!("unexpected PartyAlreadyExists in get");
-            errors::error(StatusCode::INTERNAL_SERVER_ERROR, "50003", "internal server error")
+            errors::error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "50003",
+                "internal server error",
+            )
         }
     }
 }

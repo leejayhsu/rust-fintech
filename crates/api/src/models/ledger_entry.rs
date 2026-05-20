@@ -3,6 +3,7 @@ use rust_decimal::Decimal;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
+#[allow(dead_code)]
 pub struct LedgerEntry {
     pub id: String,
     pub ledger_journal_entry_id: String,

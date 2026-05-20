@@ -1,4 +1,4 @@
-use chrono::{Utc, Duration};
+use chrono::{Duration, Utc};
 use sqlx::PgPool;
 
 use crate::{

@@ -10,10 +10,7 @@ use crate::{
     services::users as user_service,
 };
 
-pub async fn get(
-    State(pool): State<PgPool>,
-    Path(id): Path<String>,
-) -> impl IntoResponse {
+pub async fn get(State(pool): State<PgPool>, Path(id): Path<String>) -> impl IntoResponse {
     match user_service::find_by_id(&pool, &id).await {
         Ok(user) => errors::success(user),
         Err(UserError::NotFound) => errors::error(

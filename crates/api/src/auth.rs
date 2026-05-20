@@ -1,15 +1,11 @@
 use axum::{
     extract::{FromRef, FromRequestParts},
-    http::{request::Parts, StatusCode},
+    http::{StatusCode, request::Parts},
 };
 use sqlx::PgPool;
 use tower_cookies::Cookies;
 
-use crate::{
-    errors,
-    models::user::UserResp,
-    services::sessions as session_service,
-};
+use crate::{errors, models::user::UserResp, services::sessions as session_service};
 
 pub const SESSION_COOKIE_NAME: &str = "session";
 
@@ -35,9 +31,7 @@ where
         let token = cookies
             .get(SESSION_COOKIE_NAME)
             .map(|c| c.value().to_string())
-            .ok_or_else(|| {
-                errors::error(StatusCode::UNAUTHORIZED, "10001", "not authenticated")
-            })?;
+            .ok_or_else(|| errors::error(StatusCode::UNAUTHORIZED, "10001", "not authenticated"))?;
 
         let user = session_service::validate_session(&pool, &token)
             .await

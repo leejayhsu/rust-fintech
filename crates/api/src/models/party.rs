@@ -16,16 +16,28 @@ pub struct Party {
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreatePartyReq {
-    #[validate(length(min = 1, max = 255, message = "name must be between 1 and 255 characters"))]
+    #[validate(length(
+        min = 1,
+        max = 255,
+        message = "name must be between 1 and 255 characters"
+    ))]
     pub name: String,
 
     #[validate(email(message = "email must be a valid email address"))]
     pub email: Option<String>,
 
-    #[validate(length(min = 1, max = 50, message = "phone must be between 1 and 50 characters"))]
+    #[validate(length(
+        min = 1,
+        max = 50,
+        message = "phone must be between 1 and 50 characters"
+    ))]
     pub phone: Option<String>,
 
-    #[validate(length(min = 2, max = 2, message = "country_code must be a valid 2-letter ISO code"))]
+    #[validate(length(
+        min = 2,
+        max = 2,
+        message = "country_code must be a valid 2-letter ISO code"
+    ))]
     pub country_code: Option<String>,
 
     #[validate(length(min = 1, max = 20))]

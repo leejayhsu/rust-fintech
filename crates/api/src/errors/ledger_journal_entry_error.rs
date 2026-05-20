@@ -1,6 +1,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+#[allow(dead_code)]
 pub enum LedgerJournalEntryError {
     #[error("account not found")]
     AccountNotFound,
@@ -18,6 +19,7 @@ pub enum LedgerJournalEntryError {
     Database(#[from] sqlx::Error),
 }
 
+#[allow(dead_code)]
 impl LedgerJournalEntryError {
     pub fn code(&self) -> &'static str {
         match self {

@@ -12,13 +12,10 @@ pub async fn create(
     pool: &PgPool,
     req: CreateLedgerAccountReq,
 ) -> Result<LedgerAccountResp, LedgerError> {
-    let user_exists = sqlx::query_scalar!(
-        "SELECT 1 FROM users WHERE id = $1",
-        req.owner_id
-    )
-    .fetch_optional(pool)
-    .await?
-    .is_some();
+    let user_exists = sqlx::query_scalar!("SELECT 1 FROM users WHERE id = $1", req.owner_id)
+        .fetch_optional(pool)
+        .await?
+        .is_some();
 
     if !user_exists {
         return Err(LedgerError::UserNotFound);
