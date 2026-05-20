@@ -72,6 +72,12 @@ curl -X POST http://localhost:3000/api/v1/users \
   -d '{"email":"alice@example.com","password":"secret123"}'
 ```
 
+## API Contract
+
+The API contract is maintained manually in `docs/openapi.yaml`.
+
+When backend routes or request/response shapes change, update the OpenAPI spec in the same change. The frontend should generate its typed API client from this spec, so keeping it current is what gives the React app typed request/response interfaces and TanStack Query helpers.
+
 ## Database Migrations
 
 This project uses SQLx migrations. Migrations run automatically when the server starts.

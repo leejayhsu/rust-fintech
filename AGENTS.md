@@ -445,8 +445,10 @@ Frontend code lives under `apps/web` and shared frontend packages live under `pa
 
 Use OpenAPI as the contract between the Rust API and the TypeScript frontend.
 
-- The Rust API should generate or expose an OpenAPI spec from the real Axum request/response models. Prefer `utoipa` for deriving OpenAPI schemas from Rust types and handlers.
-- Generate a TypeScript API client from the OpenAPI spec with Orval.
+- Maintain the OpenAPI spec manually in `docs/openapi.yaml`.
+- Treat `docs/openapi.yaml` as part of the API source of truth. When routes, request bodies, response bodies, status codes, or error shapes change, update the spec in the same change.
+- Keep the manual spec aligned with the Axum controllers and Rust request/response models. Do not let implementation-only API changes drift from the spec.
+- Generate a TypeScript API client from `docs/openapi.yaml` with Orval.
 - Configure Orval to generate:
   - typed request and response interfaces
   - typed endpoint functions
@@ -455,6 +457,7 @@ Use OpenAPI as the contract between the Rust API and the TypeScript frontend.
 - Do not hand-write request/response interfaces in the frontend when they can be generated from the OpenAPI contract.
 - Keep API route strings centralized in the generated client. Frontend feature code should call typed client functions/hooks instead of hardcoding fetch URLs.
 - Regenerate the frontend client whenever API request/response models or routes change.
+- Prefer small, reviewed OpenAPI edits over Rust-side OpenAPI derive/generation unless the manual spec becomes too expensive to maintain.
 
 This gives the frontend an RPC-like developer experience while keeping the backend a conventional Rust HTTP API.
 
