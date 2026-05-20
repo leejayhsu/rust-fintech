@@ -4,15 +4,21 @@ A monorepo for a Rust fintech API and TypeScript frontend packages.
 
 ## Quickstart
 
+Run commands from the repository root unless a step says otherwise.
+
 ### Prerequisites
 
 - [Rust](https://rustup.rs/) (latest stable)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Node.js](https://nodejs.org/) if you are working on frontend packages
+- [Node.js](https://nodejs.org/) for the frontend workspace packages
 
 ### Install dependencies
 
 ```bash
+# Install JavaScript workspace dependencies
+npm install
+
+# Fetch and compile Rust dependencies
 cargo build -p api
 ```
 
@@ -23,13 +29,36 @@ cp .env.example .env
 # Edit .env with your database credentials
 ```
 
-### Start the dev server
+The default local database URL is:
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/rust_fintech
+```
+
+### Run the dev servers
+
+Start the backend API from one terminal:
+
+```bash
+npm run api:dev
+```
+
+This runs `cargo run -p api` and serves the API on `http://localhost:3000`.
+
+Start the frontend from another terminal:
+
+```bash
+npm run web:dev
+```
+
+This runs the `@rust-fintech/web` workspace dev script. The frontend is currently scaffolded, so the command prints a placeholder message until a web app is added.
+
+You can also run the workspace commands directly:
 
 ```bash
 cargo run -p api
+npm --workspace @rust-fintech/web run dev
 ```
-
-The server will start on `http://localhost:3000`.
 
 ### Test the API
 
