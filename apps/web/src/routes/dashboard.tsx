@@ -1,10 +1,41 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { ComponentType, SVGProps } from "react";
+import {
+  ArrowUpRight,
+  Bell,
+  CreditCard,
+  Gauge,
+  Landmark,
+  LogOut,
+  ReceiptText,
+  Search,
+  Settings,
+  Users,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type TransferFormValues = {
   recipient: string;
   amount: number;
 };
+
+type SidebarItem = {
+  label: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  active?: boolean;
+};
+
+const sidebarItems = [
+  { label: "Overview", icon: Gauge, active: true },
+  { label: "Transfers", icon: ArrowUpRight },
+  { label: "Accounts", icon: CreditCard },
+  { label: "Counterparties", icon: Users },
+  { label: "Statements", icon: ReceiptText },
+] satisfies SidebarItem[];
 
 const accountSummaryQueryKey = ["account-summary"] as const;
 
@@ -41,92 +72,149 @@ export function DashboardRoute() {
   });
 
   return (
-    <section className="dashboard">
-      <header className="dashboard-header">
-        <div>
-          <p className="eyebrow">Rust Fintech</p>
-          <h1>Operations Console</h1>
+    <section className="dashboard-shell">
+      <AppSidebar />
+
+      <div className="dashboard">
+        <header className="dashboard-header">
+          <div>
+            <p className="eyebrow">Rust Fintech</p>
+            <h1>Operations Console</h1>
+          </div>
+          <div className="dashboard-actions">
+            <Button aria-label="Search" size="icon" type="button" variant="outline">
+              <Search aria-hidden="true" />
+            </Button>
+            <Button aria-label="Notifications" size="icon" type="button" variant="outline">
+              <Bell aria-hidden="true" />
+            </Button>
+            <div className="status-pill">Signed in</div>
+          </div>
+        </header>
+
+        <div className="dashboard-grid">
+          <article className="metric-panel">
+            <span>Available Balance</span>
+            <strong>
+              {accountSummary.data
+                ? new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: accountSummary.data.currency,
+                  }).format(accountSummary.data.balance)
+                : "Loading"}
+            </strong>
+          </article>
+
+          <article className="metric-panel">
+            <span>Pending Transfers</span>
+            <strong>{accountSummary.data?.pendingTransfers ?? "Loading"}</strong>
+          </article>
         </div>
-        <div className="status-pill">Signed in</div>
-      </header>
 
-      <div className="dashboard-grid">
-        <article className="metric-panel">
-          <span>Available Balance</span>
-          <strong>
-            {accountSummary.data
-              ? new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: accountSummary.data.currency,
-                }).format(accountSummary.data.balance)
-              : "Loading"}
-          </strong>
-        </article>
+        <form
+          className="transfer-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            void form.handleSubmit();
+          }}
+        >
+          <h2>New Transfer</h2>
 
-        <article className="metric-panel">
-          <span>Pending Transfers</span>
-          <strong>{accountSummary.data?.pendingTransfers ?? "Loading"}</strong>
-        </article>
+          <form.Field
+            name="recipient"
+            validators={{
+              onChange: ({ value }) =>
+                value.trim().length === 0 ? "Recipient is required" : undefined,
+            }}
+          >
+            {(field) => (
+              <div className="form-field">
+                <Label htmlFor={field.name}>Recipient</Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                />
+                <span className="field-error">{field.state.meta.errors.join(", ")}</span>
+              </div>
+            )}
+          </form.Field>
+
+          <form.Field
+            name="amount"
+            validators={{
+              onChange: ({ value }) =>
+                value <= 0 ? "Amount must be greater than zero" : undefined,
+            }}
+          >
+            {(field) => (
+              <div className="form-field">
+                <Label htmlFor={field.name}>Amount</Label>
+                <Input
+                  id={field.name}
+                  min="0"
+                  name={field.name}
+                  step="0.01"
+                  type="number"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => field.handleChange(event.target.valueAsNumber)}
+                />
+                <span className="field-error">{field.state.meta.errors.join(", ")}</span>
+              </div>
+            )}
+          </form.Field>
+
+          <Button type="submit" disabled={transferMutation.isPending}>
+            {transferMutation.isPending ? "Submitting" : "Queue Transfer"}
+          </Button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+function AppSidebar() {
+  return (
+    <aside className="app-sidebar" aria-label="Primary navigation">
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-icon">
+          <Landmark aria-hidden="true" />
+        </div>
+        <div>
+          <strong>Rust Fintech</strong>
+          <span>Workspace</span>
+        </div>
       </div>
 
-      <form
-        className="transfer-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        <h2>New Transfer</h2>
+      <nav className="sidebar-nav">
+        {sidebarItems.map((item) => (
+          <Button
+            key={item.label}
+            className="sidebar-nav-item"
+            data-active={item.active ? "true" : undefined}
+            type="button"
+            variant="ghost"
+          >
+            <item.icon aria-hidden="true" />
+            <span>{item.label}</span>
+          </Button>
+        ))}
+      </nav>
 
-        <form.Field
-          name="recipient"
-          validators={{
-            onChange: ({ value }) =>
-              value.trim().length === 0 ? "Recipient is required" : undefined,
-          }}
-        >
-          {(field) => (
-            <label>
-              Recipient
-              <input
-                name={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(event) => field.handleChange(event.target.value)}
-              />
-              <span>{field.state.meta.errors.join(", ")}</span>
-            </label>
-          )}
-        </form.Field>
-
-        <form.Field
-          name="amount"
-          validators={{
-            onChange: ({ value }) => (value <= 0 ? "Amount must be greater than zero" : undefined),
-          }}
-        >
-          {(field) => (
-            <label>
-              Amount
-              <input
-                min="0"
-                name={field.name}
-                step="0.01"
-                type="number"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(event) => field.handleChange(event.target.valueAsNumber)}
-              />
-              <span>{field.state.meta.errors.join(", ")}</span>
-            </label>
-          )}
-        </form.Field>
-
-        <button type="submit" disabled={transferMutation.isPending}>
-          {transferMutation.isPending ? "Submitting" : "Queue Transfer"}
-        </button>
-      </form>
-    </section>
+      <div className="sidebar-footer">
+        <Button className="sidebar-nav-item" type="button" variant="ghost">
+          <Settings aria-hidden="true" />
+          <span>Settings</span>
+        </Button>
+        <Button className="sidebar-nav-item" type="button" variant="ghost">
+          <LogOut aria-hidden="true" />
+          <span>Sign out</span>
+        </Button>
+      </div>
+    </aside>
   );
 }
