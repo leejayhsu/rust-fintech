@@ -27,7 +27,13 @@ users create fx money movements on behalf of other businesses. so this is b2b2b.
 - party table will have
   - tax_id text column
   - legal_name text column
-  - address 
+  - address
+
+## party_members
+- these are either UBO's or legal reps of the party company.
+- part_members will have a tree structure, with each member having a parent member and a list of child members.
+- need to be able to easily query a party and get the entire members tree
+- need to be able to easily add and remove members from the tree.
 
 ## transfers
 - transfers have a one to many with LJE (ledger journal entries)
@@ -85,3 +91,20 @@ users create fx money movements on behalf of other businesses. so this is b2b2b.
 - tax_id
 - legal_name
 - address
+
+## party_members (can be business or individual)
+- pk
+- legal_name
+- type (business or individual)
+- address
+- title
+- is_legal_rep
+- is_ubo
+decide whatever schema works best for the tree structure.
+remember, it must be easy to query for the entire tree of members of a party.
+
+## gov_ids (polymorphic table)
+- pk
+- fk to parties, or party_members, or any other table in the future that might have government ids.
+- type (e.g. social security number, passport number, etc.)
+- value (the actual government id number)

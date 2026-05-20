@@ -1,8 +1,8 @@
-# CLAUDE.md
+# API
 
 ## Project Overview
 
-Rust REST API using Axum, SQLx, and thiserror. Follows a controller/service architecture with strict layer separation.
+Rust REST API in `crates/api` using Axum, SQLx, and thiserror. Follows a controller/service architecture with strict layer separation.
 
 ## Architecture
 
@@ -424,3 +424,55 @@ When providing curl examples or test commands, **never include a trailing slash*
 - Controllers never contain SQL or business logic
 - All errors must be logged at the controller boundary before returning 5xx responses
 - Prefer explicit `match` over `map_err` chains when error variants need different HTTP status codes
+
+# FE
+
+## Project Overview
+
+Frontend code lives under `apps/web` and shared frontend packages live under `packages/*`. Treat this as a TypeScript React frontend that talks to the Rust API over HTTP.
+
+## Stack
+
+- Use TypeScript for all frontend code.
+- Use React for UI.
+- Use TanStack Router for client-side routing.
+- Use TanStack Form for forms and form validation flows.
+- Use TanStack Query for server state, caching, mutations, invalidation, and request lifecycle handling.
+- Default to TanStack libraries when there is a reasonable TanStack option.
+- Do not use TanStack Start. This monorepo has a separate Rust backend, so the frontend should remain a standalone React app that calls the API.
+
+## API Client And Type Safety
+
+Use OpenAPI as the contract between the Rust API and the TypeScript frontend.
+
+- The Rust API should generate or expose an OpenAPI spec from the real Axum request/response models. Prefer `utoipa` for deriving OpenAPI schemas from Rust types and handlers.
+- Generate a TypeScript API client from the OpenAPI spec with Orval.
+- Configure Orval to generate:
+  - typed request and response interfaces
+  - typed endpoint functions
+  - TanStack Query hooks/options for queries and mutations
+- Put generated client code in a shared package such as `packages/api-client` so `apps/web` can consume it without duplicating API types.
+- Do not hand-write request/response interfaces in the frontend when they can be generated from the OpenAPI contract.
+- Keep API route strings centralized in the generated client. Frontend feature code should call typed client functions/hooks instead of hardcoding fetch URLs.
+- Regenerate the frontend client whenever API request/response models or routes change.
+
+This gives the frontend an RPC-like developer experience while keeping the backend a conventional Rust HTTP API.
+
+## Routing
+
+- Define application routes with TanStack Router.
+- Keep route definitions type-safe and colocate route-level data loading with the route where practical.
+- Use generated API client calls inside TanStack Query loaders/hooks rather than calling `fetch` directly from components.
+
+## Forms
+
+- Use TanStack Form for complex or persisted forms.
+- Prefer shared validation schemas/types from generated API contracts when possible.
+- Keep UI validation aligned with backend validation, but treat backend validation as authoritative.
+
+## Data Fetching
+
+- Use TanStack Query for all server state.
+- Prefer query keys that are stable, explicit, and colocated with the feature or generated client helpers.
+- Use mutations for writes and invalidate or update relevant queries after successful mutations.
+- Do not store server state in local React state except for transient UI interactions.
