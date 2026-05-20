@@ -1,14 +1,29 @@
 {
   "name": "@rust-fintech/web",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vp dev .",
+    "build": "vp build .",
+    "check": "vp check .",
     "typecheck": "tsc --noEmit",
-    "dev": "echo \"Frontend scaffold has not been added yet.\"",
-    "build": "echo \"Frontend scaffold has not been added yet.\""
+    "lint": "vp lint .",
+    "format": "vp fmt ."
+  },
+  "dependencies": {
+    "@tanstack/react-form": "^1.32.0",
+    "@tanstack/react-query": "^5.100.11",
+    "@tanstack/react-router": "^1.170.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "oxfmt": "^0.51.0",
+    "oxlint": "^1.66.0",
+    "typescript": "^6.0.3"
   }
 }

@@ -1,6 +1,7 @@
 {
   "name": "rust-fintech-api-monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -8,6 +9,13 @@
   "scripts": {
     "api:dev": "cargo run -p api",
     "api:check": "cargo check -p api",
-    "web:dev": "npm --workspace @rust-fintech/web run dev"
+    "web:dev": "vp dev apps/web",
+    "web:build": "vp build apps/web",
+    "web:check": "vp check apps/web",
+    "web:lint": "vp lint apps/web",
+    "web:format": "vp fmt apps/web"
+  },
+  "devDependencies": {
+    "vite-plus": "^0.1.22"
   }
 }
