@@ -5,6 +5,7 @@
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "noEmit": true,

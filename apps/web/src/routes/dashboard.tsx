@@ -47,7 +47,7 @@ export function DashboardRoute() {
           <p className="eyebrow">Rust Fintech</p>
           <h1>Operations Console</h1>
         </div>
-        <div className="status-pill">API ready</div>
+        <div className="status-pill">Signed in</div>
       </header>
 
       <div className="dashboard-grid">
