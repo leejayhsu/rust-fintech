@@ -435,6 +435,7 @@ Frontend code lives under `apps/web` and shared frontend packages live under `pa
 
 - Use TypeScript for all frontend code.
 - Use React for UI.
+- Use shadcn/ui as the UI component library, with the Radix-backed components and local component source under `apps/web/src/components/ui`.
 - Use TanStack Router for client-side routing.
 - Use TanStack Form for forms and form validation flows.
 - Use TanStack Query for server state, caching, mutations, invalidation, and request lifecycle handling.
