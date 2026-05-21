@@ -10,7 +10,7 @@ pub async fn find_by_id(pool: &PgPool, id: &str) -> Result<UserResp, UserError> 
     let user = sqlx::query_as!(
         UserResp,
         r#"
-        SELECT id, email, created_at
+        SELECT id, email, role, created_at
         FROM users
         WHERE id = $1
         "#,
@@ -31,7 +31,7 @@ pub async fn create(pool: &PgPool, req: CreateUserReq) -> Result<User, UserError
         r#"
         INSERT INTO users (id, email, password_hash, created_at)
         VALUES ($1, $2, $3, $4)
-        RETURNING id, email, password_hash, created_at
+        RETURNING id, email, role, password_hash, created_at
         "#,
         utils::generate_id("usr"),
         req.email,

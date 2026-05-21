@@ -10,6 +10,7 @@ pub struct Party {
     pub phone: Option<String>,
     pub country_code: Option<String>,
     pub r#type: String,
+    pub role: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -42,6 +43,9 @@ pub struct CreatePartyReq {
 
     #[validate(length(min = 1, max = 20))]
     pub r#type: String,
+
+    #[validate(length(min = 1, max = 20))]
+    pub role: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -52,6 +56,7 @@ pub struct PartyResp {
     pub phone: Option<String>,
     pub country_code: Option<String>,
     pub r#type: String,
+    pub role: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -65,6 +70,7 @@ impl From<Party> for PartyResp {
             phone: p.phone,
             country_code: p.country_code,
             r#type: p.r#type,
+            role: p.role,
             created_at: p.created_at,
             updated_at: p.updated_at,
         }
@@ -72,3 +78,6 @@ impl From<Party> for PartyResp {
 }
 
 pub const VALID_PARTY_TYPES: &[&str] = &["individual", "business"];
+pub const VALID_PARTY_ROLES: &[&str] = &["originator", "beneficiary", "counterparty"];
+pub const DEFAULT_PARTY_ROLE: &str = "counterparty";
+pub const ORIGINATOR_PARTY_ROLE: &str = "originator";

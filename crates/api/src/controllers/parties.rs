@@ -9,7 +9,7 @@ use validator::Validate;
 
 use crate::{
     errors::{self, party_error::PartyError},
-    models::party::{CreatePartyReq, VALID_PARTY_TYPES},
+    models::party::{CreatePartyReq, ORIGINATOR_PARTY_ROLE, VALID_PARTY_ROLES, VALID_PARTY_TYPES},
     services::parties as party_service,
 };
 
@@ -42,6 +42,24 @@ pub async fn create(
             "50006",
             "type must be either 'individual' or 'business'",
         );
+    }
+
+    if let Some(role) = body.role.as_deref() {
+        if !VALID_PARTY_ROLES.contains(&role) {
+            return errors::error(
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "50007",
+                "role must be 'originator', 'beneficiary', or 'counterparty'",
+            );
+        }
+
+        if role == ORIGINATOR_PARTY_ROLE && body.r#type != "business" {
+            return errors::error(
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "50008",
+                "originator parties must have type 'business'",
+            );
+        }
     }
 
     match party_service::create(&pool, body).await {

@@ -6,6 +6,7 @@ use validator::Validate;
 pub struct User {
     pub id: String,
     pub email: String,
+    pub role: String,
     #[allow(dead_code)]
     #[serde(skip_serializing)]
     pub password_hash: String,
@@ -25,6 +26,7 @@ pub struct CreateUserReq {
 pub struct UserResp {
     pub id: String,
     pub email: String,
+    pub role: String,
     pub created_at: DateTime<Utc>,
 }
 
@@ -33,6 +35,7 @@ impl From<User> for UserResp {
         Self {
             id: user.id,
             email: user.email,
+            role: user.role,
             created_at: user.created_at,
         }
     }

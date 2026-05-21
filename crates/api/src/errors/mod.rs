@@ -5,6 +5,7 @@ use serde_json::json;
 pub mod auth_error;
 pub mod ledger_error;
 pub mod ledger_journal_entry_error;
+pub mod onboarding_error;
 pub mod party_error;
 pub mod user_error;
 
@@ -17,7 +18,6 @@ pub struct ApiError {
 #[derive(Debug, Serialize)]
 pub struct ApiResponse<T> {
     pub success: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<ApiError>,
     pub data: Option<T>,
 }

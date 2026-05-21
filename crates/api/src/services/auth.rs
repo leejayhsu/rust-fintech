@@ -9,7 +9,7 @@ pub async fn verify_credentials(
 ) -> Result<User, AuthError> {
     let user = sqlx::query_as!(
         User,
-        "SELECT id, email, password_hash, created_at FROM users WHERE email = $1",
+        "SELECT id, email, role, password_hash, created_at FROM users WHERE email = $1",
         email
     )
     .fetch_optional(pool)

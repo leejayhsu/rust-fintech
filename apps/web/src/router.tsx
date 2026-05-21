@@ -1,5 +1,7 @@
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 
+import { AdminOnboardingRoute } from "./routes/admin-onboarding";
+import { ClientOnboardingRoute } from "./routes/client-onboarding";
 import { DashboardRoute } from "./routes/dashboard";
 import { LandingRoute } from "./routes/landing";
 
@@ -19,7 +21,24 @@ const dashboardRoute = createRoute({
   component: DashboardRoute,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, dashboardRoute]);
+const clientOnboardingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/onboarding/client",
+  component: ClientOnboardingRoute,
+});
+
+const adminOnboardingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/onboarding",
+  component: AdminOnboardingRoute,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  dashboardRoute,
+  clientOnboardingRoute,
+  adminOnboardingRoute,
+]);
 
 export const router = createRouter({
   routeTree,

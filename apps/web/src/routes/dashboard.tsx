@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import type { ComponentType, SVGProps } from "react";
 import {
   ArrowUpRight,
@@ -11,12 +12,14 @@ import {
   ReceiptText,
   Search,
   Settings,
+  ShieldCheck,
   Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getCurrentUser } from "@/lib/auth-api";
 
 type TransferFormValues = {
   recipient: string;
@@ -52,9 +55,15 @@ async function createTransfer(values: TransferFormValues) {
 }
 
 export function DashboardRoute() {
+  const navigate = useNavigate();
   const accountSummary = useQuery({
     queryKey: accountSummaryQueryKey,
     queryFn: getAccountSummary,
+  });
+
+  const currentUser = useQuery({
+    queryKey: ["current-user"],
+    queryFn: getCurrentUser,
   });
 
   const transferMutation = useMutation({
@@ -73,7 +82,7 @@ export function DashboardRoute() {
 
   return (
     <section className="dashboard-shell">
-      <AppSidebar />
+      <AppSidebar isAdmin={currentUser.data?.role === "admin"} />
 
       <div className="dashboard">
         <header className="dashboard-header">
@@ -108,6 +117,13 @@ export function DashboardRoute() {
           <article className="metric-panel">
             <span>Pending Transfers</span>
             <strong>{accountSummary.data?.pendingTransfers ?? "Loading"}</strong>
+          </article>
+
+          <article className="metric-panel action-panel">
+            <span>Client setup</span>
+            <Button type="button" onClick={() => void navigate({ to: "/onboarding/client" })}>
+              Onboard Client
+            </Button>
           </article>
         </div>
 
@@ -177,7 +193,9 @@ export function DashboardRoute() {
   );
 }
 
-function AppSidebar() {
+function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
+  const navigate = useNavigate();
+
   return (
     <aside className="app-sidebar" aria-label="Primary navigation">
       <div className="sidebar-brand">
@@ -203,6 +221,17 @@ function AppSidebar() {
             <span>{item.label}</span>
           </Button>
         ))}
+        {isAdmin ? (
+          <Button
+            className="sidebar-nav-item"
+            type="button"
+            variant="ghost"
+            onClick={() => void navigate({ to: "/admin/onboarding" })}
+          >
+            <ShieldCheck aria-hidden="true" />
+            <span>Admin Review</span>
+          </Button>
+        ) : null}
       </nav>
 
       <div className="sidebar-footer">

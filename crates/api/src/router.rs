@@ -25,6 +25,9 @@ fn api_routes() -> Router<PgPool> {
         .nest("/users", user_routes())
         .nest("/ledger", ledger_routes())
         .nest("/parties", party_routes())
+        .nest("/onboardings", onboarding_routes())
+        .nest("/admin", admin_routes())
+        .nest("/internal", internal_routes())
 }
 
 fn auth_routes() -> Router<PgPool> {
@@ -53,4 +56,35 @@ fn party_routes() -> Router<PgPool> {
     Router::new()
         .route("/", post(controllers::parties::create))
         .route("/{id}", get(controllers::parties::get))
+}
+
+fn onboarding_routes() -> Router<PgPool> {
+    Router::new()
+        .route(
+            "/client",
+            post(controllers::onboarding::create_client).get(controllers::onboarding::list_client),
+        )
+        .route("/client/{id}", get(controllers::onboarding::get_client))
+}
+
+fn admin_routes() -> Router<PgPool> {
+    Router::new()
+        .route("/onboardings", get(controllers::onboarding::list_admin))
+        .route("/onboardings/{id}", get(controllers::onboarding::get_admin))
+        .route(
+            "/onboardings/{id}/review",
+            post(controllers::onboarding::review_admin),
+        )
+}
+
+fn internal_routes() -> Router<PgPool> {
+    Router::new()
+        .route(
+            "/onboardings/{id}/kyb-results",
+            post(controllers::onboarding::record_kyb_results),
+        )
+        .route(
+            "/onboardings/{id}/complete",
+            post(controllers::onboarding::complete),
+        )
 }

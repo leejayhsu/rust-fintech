@@ -9,6 +9,11 @@
   "scripts": {
     "api:dev": "cargo run -p api",
     "api:check": "cargo check -p api",
+    "api-client:generate": "orval --config orval.config.ts",
+    "api-client:check": "npm --workspace @rust-fintech/api-client run check",
+    "temporal:dev": "temporal server start-dev",
+    "worker:dev": "npm --workspace @rust-fintech/temporal-worker run dev",
+    "worker:check": "npm --workspace @rust-fintech/temporal-worker run check",
     "web:dev": "vp dev apps/web",
     "web:build": "vp build apps/web",
     "web:check": "vp check apps/web",
@@ -16,6 +21,7 @@
     "web:format": "vp fmt apps/web"
   },
   "devDependencies": {
+    "orval": "^7.17.0",
     "vite-plus": "^0.1.22"
   }
 }

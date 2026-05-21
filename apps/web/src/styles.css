@@ -427,6 +427,241 @@ h1 {
   margin-bottom: 0;
 }
 
+.action-panel {
+  align-content: space-between;
+}
+
+.workspace-page {
+  display: grid;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 1180px;
+  min-height: 100vh;
+  padding: 32px;
+  width: 100%;
+}
+
+.workspace-header {
+  align-items: center;
+  border-bottom: 1px solid #d8dfd9;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 18px;
+}
+
+.workspace-header h1 {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.text-link {
+  color: #244439;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.wizard-layout,
+.admin-layout {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+
+.wizard-steps,
+.wizard-panel,
+.review-panel,
+.admin-list {
+  background: #fff;
+  border: 1px solid #d8dfd9;
+  border-radius: 8px;
+}
+
+.wizard-steps {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.wizard-step,
+.admin-row {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #30483e;
+  cursor: pointer;
+  font-weight: 750;
+  text-align: left;
+}
+
+.wizard-step {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px;
+}
+
+.wizard-step span {
+  align-items: center;
+  background: #edf4f1;
+  border-radius: 999px;
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.wizard-step[data-active="true"],
+.admin-row[data-active="true"] {
+  background: #edf4f1;
+  border-color: #bdd3ca;
+}
+
+.wizard-panel {
+  display: grid;
+  gap: 24px;
+  min-height: 520px;
+  padding: 24px;
+}
+
+.wizard-fields {
+  align-content: start;
+  display: grid;
+  gap: 18px;
+}
+
+.panel-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.panel-title svg {
+  height: 22px;
+  width: 22px;
+}
+
+.panel-title h2,
+.review-panel h2 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.field-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(90px, 0.35fr) minmax(0, 1fr);
+}
+
+.review-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.review-list div {
+  border-bottom: 1px solid #edf0ed;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 180px minmax(0, 1fr);
+  padding: 10px 0;
+}
+
+.review-list.compact div {
+  grid-template-columns: 110px minmax(0, 1fr);
+}
+
+.review-list dt {
+  color: #596760;
+  font-weight: 800;
+}
+
+.review-list dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wizard-actions,
+.review-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.status-panel {
+  align-items: center;
+  background: #eef6f2;
+  border: 1px solid #c8d9d1;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+}
+
+.status-panel svg {
+  height: 22px;
+  width: 22px;
+}
+
+.status-panel div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.status-panel span {
+  color: #596760;
+  overflow-wrap: anywhere;
+}
+
+.admin-layout {
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+.admin-list {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.admin-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(180px, 1fr) 64px 120px 120px;
+  min-height: 54px;
+  padding: 10px;
+}
+
+.admin-row span {
+  color: #596760;
+}
+
+.review-panel {
+  align-content: start;
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.empty-state {
+  align-items: center;
+  background: #fff;
+  border: 1px dashed #cbd8d1;
+  border-radius: 8px;
+  color: #596760;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  min-height: 180px;
+  padding: 24px;
+  text-align: center;
+}
+
 @media (max-width: 860px) {
   .landing-page {
     grid-template-columns: 1fr;
@@ -495,6 +730,34 @@ h1 {
 
   .landing-metrics,
   .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-header,
+  .wizard-actions,
+  .review-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wizard-layout,
+  .admin-layout,
+  .field-grid,
+  .review-list div,
+  .review-list.compact div {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-steps {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .wizard-step {
+    flex: 0 0 auto;
+  }
+
+  .admin-row {
     grid-template-columns: 1fr;
   }
 }

@@ -2,17 +2,19 @@ use sqlx::PgPool;
 
 use crate::{
     errors::party_error::PartyError,
-    models::party::{CreatePartyReq, Party, PartyResp},
+    models::party::{CreatePartyReq, DEFAULT_PARTY_ROLE, Party, PartyResp},
     utils,
 };
 
 pub async fn create(pool: &PgPool, req: CreatePartyReq) -> Result<PartyResp, PartyError> {
+    let role = req.role.unwrap_or_else(|| DEFAULT_PARTY_ROLE.to_string());
+
     let party = sqlx::query_as!(
         Party,
         r#"
-        INSERT INTO parties (id, name, email, phone, country_code, type, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, name, email, phone, country_code, type, created_at, updated_at
+        INSERT INTO parties (id, name, email, phone, country_code, type, role, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING id, name, email, phone, country_code, type, role, created_at, updated_at
         "#,
         utils::generate_id("party"),
         req.name,
@@ -20,6 +22,7 @@ pub async fn create(pool: &PgPool, req: CreatePartyReq) -> Result<PartyResp, Par
         req.phone,
         req.country_code,
         req.r#type,
+        role,
         chrono::Utc::now(),
         chrono::Utc::now()
     )
@@ -39,7 +42,7 @@ pub async fn find_by_id(pool: &PgPool, id: &str) -> Result<PartyResp, PartyError
     let party = sqlx::query_as!(
         Party,
         r#"
-        SELECT id, name, email, phone, country_code, type, created_at, updated_at
+        SELECT id, name, email, phone, country_code, type, role, created_at, updated_at
         FROM parties
         WHERE id = $1
         "#,

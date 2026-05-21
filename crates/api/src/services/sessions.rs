@@ -33,7 +33,7 @@ pub async fn create(pool: &PgPool, user_id: &str) -> Result<String, AuthError> {
 pub async fn validate_session(pool: &PgPool, token: &str) -> Result<UserResp, AuthError> {
     let row = sqlx::query!(
         r#"
-        SELECT u.id, u.email, u.created_at
+        SELECT u.id, u.email, u.role, u.created_at
         FROM sessions s
         JOIN users u ON s.user_id = u.id
         WHERE s.token = $1 AND s.expires_at > NOW()
@@ -47,6 +47,7 @@ pub async fn validate_session(pool: &PgPool, token: &str) -> Result<UserResp, Au
         Some(r) => Ok(UserResp {
             id: r.id,
             email: r.email,
+            role: r.role,
             created_at: r.created_at,
         }),
         None => Err(AuthError::NotAuthenticated),

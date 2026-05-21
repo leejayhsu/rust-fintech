@@ -1,0 +1,268 @@
+openapi: 3.1.0
+info:
+  title: Rust Fintech API
+  version: 0.1.0
+servers:
+  - url: /
+paths:
+  /api/v1/auth/me:
+    get:
+      operationId: getCurrentUser
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserApiResponse"
+  /api/v1/onboardings/client:
+    post:
+      operationId: createClientOnboarding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientOnboardingReq"
+      responses:
+        "200":
+          description: Client onboarding created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientOnboardingApiResponse"
+    get:
+      operationId: listMyClientOnboardings
+      responses:
+        "200":
+          description: Client onboardings submitted by the current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientOnboardingListApiResponse"
+  /api/v1/onboardings/client/{id}:
+    get:
+      operationId: getMyClientOnboarding
+      parameters:
+        - $ref: "#/components/parameters/OnboardingId"
+      responses:
+        "200":
+          description: Client onboarding
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientOnboardingApiResponse"
+  /api/v1/admin/onboardings:
+    get:
+      operationId: listAdminOnboardings
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema:
+            $ref: "#/components/schemas/OnboardingStatus"
+      responses:
+        "200":
+          description: Onboardings for admin review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientOnboardingListApiResponse"
+  /api/v1/admin/onboardings/{id}:
+    get:
+      operationId: getAdminOnboarding
+      parameters:
+        - $ref: "#/components/parameters/OnboardingId"
+      responses:
+        "200":
+          description: Admin onboarding detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientOnboardingApiResponse"
+  /api/v1/admin/onboardings/{id}/review:
+    post:
+      operationId: reviewClientOnboarding
+      parameters:
+        - $ref: "#/components/parameters/OnboardingId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminReviewClientOnboardingReq"
+      responses:
+        "200":
+          description: Review decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientOnboardingApiResponse"
+components:
+  parameters:
+    OnboardingId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  schemas:
+    ApiError:
+      type: object
+      required: [code, desc]
+      properties:
+        code:
+          type: string
+        desc:
+          type: string
+    OnboardingStatus:
+      type: string
+      enum:
+        - draft
+        - kyb_pending
+        - manual_review_pending
+        - approved
+        - rejected
+        - failed
+    User:
+      type: object
+      required: [id, email, role, created_at]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [user, admin]
+        created_at:
+          type: string
+          format: date-time
+    ClientOnboarding:
+      type: object
+      required:
+        - id
+        - submitted_by_user_id
+        - company_name
+        - country_code
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        submitted_by_user_id:
+          type: string
+        company_name:
+          type: string
+        company_email:
+          type: [string, "null"]
+          format: email
+        phone:
+          type: [string, "null"]
+        country_code:
+          type: string
+          minLength: 2
+          maxLength: 2
+        registration_number:
+          type: [string, "null"]
+        address:
+          type: [string, "null"]
+        status:
+          $ref: "#/components/schemas/OnboardingStatus"
+        temporal_workflow_id:
+          type: [string, "null"]
+        kyb_vendor_a_status:
+          type: [string, "null"]
+        kyb_vendor_a_response:
+          nullable: true
+        kyb_vendor_b_status:
+          type: [string, "null"]
+        kyb_vendor_b_response:
+          nullable: true
+        reviewed_by_user_id:
+          type: [string, "null"]
+        reviewed_at:
+          type: [string, "null"]
+          format: date-time
+        review_note:
+          type: [string, "null"]
+        created_party_id:
+          type: [string, "null"]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateClientOnboardingReq:
+      type: object
+      required: [company_name, country_code]
+      properties:
+        company_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        company_email:
+          type: [string, "null"]
+          format: email
+        phone:
+          type: [string, "null"]
+          minLength: 1
+          maxLength: 50
+        country_code:
+          type: string
+          minLength: 2
+          maxLength: 2
+        registration_number:
+          type: [string, "null"]
+          minLength: 1
+          maxLength: 100
+        address:
+          type: [string, "null"]
+          minLength: 1
+          maxLength: 500
+    AdminReviewClientOnboardingReq:
+      type: object
+      required: [approved]
+      properties:
+        approved:
+          type: boolean
+        note:
+          type: [string, "null"]
+          maxLength: 1000
+    UserApiResponse:
+      allOf:
+        - $ref: "#/components/schemas/ApiResponseBase"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/User"
+    ClientOnboardingApiResponse:
+      allOf:
+        - $ref: "#/components/schemas/ApiResponseBase"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/ClientOnboarding"
+    ClientOnboardingListApiResponse:
+      allOf:
+        - $ref: "#/components/schemas/ApiResponseBase"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/ClientOnboarding"
+    ApiResponseBase:
+      type: object
+      required: [success, error, data]
+      properties:
+        success:
+          type: boolean
+        error:
+          oneOf:
+            - $ref: "#/components/schemas/ApiError"
+            - type: "null"
+        data: {}
