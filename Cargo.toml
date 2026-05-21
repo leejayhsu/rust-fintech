@@ -1,4 +1,4 @@
 [workspace]
-members = ["crates/api"]
+members = ["crates/api", "crates/temporal-worker"]
 resolver = "3"
 
